@@ -1,0 +1,33 @@
+filebeat.inputs:
+  - type: container
+    stream: "stdout"
+    paths:
+      - "/var/lib/docker/containers/d40ed3cd922644f1b1d284ed3baf8b8ef98ef370bbb42551386ebcda64f26ff5/*.log"
+      
+processors:
+  - decode_json_fields:
+      fields: ["log", "message"]
+      target: ""
+      max_depth: 2
+      # overwrite existing target elasticsearch fields while decoding json fields
+      overwrite_keys: true
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+logging.level: error
+logging.to_files: false
+logging.to_syslog: false
+loggins.metrice.enabled: false
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+ssl.verification_mode: none
