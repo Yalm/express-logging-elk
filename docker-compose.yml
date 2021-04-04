@@ -54,6 +54,16 @@ services:
       - logstash
     networks:
       - elk
+  
+  api:
+    build: .
+    ports:
+      - '3000:3000'
+      - '9229:9229'
+    volumes:
+      - ".:/app"
+    networks:
+      - elk
 
 volumes:
   esdata1:
